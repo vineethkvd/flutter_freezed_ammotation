@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_freezed_ammotation/posts/view/post_page.dart';
 import 'package:get/get.dart';
+
+import 'category/view/category_page.dart';
 void main(){
   runApp(MyApp());
 }
@@ -15,7 +17,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return  const GetMaterialApp(
-      home: PostPage(),
+      home: CategoryPage(),
     );
   }
 }
