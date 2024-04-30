@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 import '../model/category_model.dart';
 
 class CategoryController extends GetxController {
-  final dataList = <Data>[].obs; // RxList to store categories
+  final RxList<Data> dataList = <Data>[].obs; // RxList to store categories
+  final categoryModel = CategoryModel().obs;
 
   @override
   void onInit() {
@@ -15,31 +16,35 @@ class CategoryController extends GetxController {
     fetchCategories(); // Fetch categories when the controller is initialized
   }
 
-  void fetchCategories() async {
+  Future<void> fetchCategories() async {
     try {
       final response = await http.post(
         Uri.parse('http://teckzy.in/bg_crop/RestApi/DealerApi/category.php'),
         body: json.encode({"api_key": "bgcrop@123"}),
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final responseData = json.decode(response.body);
+        categoryModel.value = CategoryModel.fromJson(responseData); // Assign to observable using .value
+
         if (kDebugMode) {
-          print("jsonData $jsonData");
+          print("responseData: $responseData");
         }
-        final categoryModel = CategoryModel.fromJson(jsonData);
-        if (categoryModel.status == true) {
-          if (categoryModel.data != null) {
-            dataList.assignAll(categoryModel.data!);
-          } else {
-            throw Exception('Failed to load categories. Data is null.');
+        if (categoryModel.value.status == true) { // Access value using .value
+          dataList.assignAll(categoryModel.value.data!);
+          if (kDebugMode) {
+            print("Fetched categories: ${dataList.length}");
+            print("First category name: ${dataList.first.categoryName}");
           }
+        } else {
+          throw Exception('Failed to load categories: ${categoryModel.value.message}');
         }
       } else {
         throw Exception(
             'Failed to load categories. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to fetch categories: $e');
+      print('Error fetching categories: $e');
+      rethrow; // Rethrow the exception for higher-level error handling
     }
   }
 }

@@ -22,38 +22,33 @@ class _CategoryPageState extends State<CategoryPage> {
       body: Container(
         height: Get.height,
         width: Get.width,
-        child: Column(
+        child: Obx(() => Column(
+
           children: [
-            Obx(
-              () {
-                if (controller.dataList.value.isEmpty) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height: 350,
-                        child: ListView.builder(
-                          itemCount: controller.dataList.value.length,
-                          itemBuilder: (context, index) {
-                            final category = controller.dataList.value[index];
-                            return ListTile(
-                              title: Text(category.categoryName ?? ''),
-                              subtitle: Text(category.catStatus ?? ''),
-                              // Add onTap handler if needed
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }
-              },
-            ),
+            ElevatedButton(onPressed: () {
+              controller.fetchCategories();
+            }, child: Text("fetch")),
+            Text("${controller.dataList.value}"),
+          Column(
+            children: [
+              SizedBox(
+                height: 350,
+                child: ListView.builder(
+                  itemCount: controller.dataList.value.length,
+                  itemBuilder: (context, index) {
+                    final category = controller.dataList.value[index];
+                    return ListTile(
+                      title: Text(category.categoryName ?? ''),
+                      subtitle: Text(category.catStatus ?? ''),
+                      // Add onTap handler if needed
+                    );
+                  },
+                ),
+              ),
+            ],
+          )
           ],
-        ),
+        ),)
       ),
     );
   }
